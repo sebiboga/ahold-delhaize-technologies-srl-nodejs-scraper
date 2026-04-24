@@ -85,22 +85,27 @@ function parseJobsFromHtml(html) {
   
   const directVacancies = $('a[href*="/vacature/"]');
   if (directVacancies.length === 0) {
-    const scriptJobs = html.match(/"(\/vacature\/\d+[^"]+)"/g);
-    if (scriptJobs) {
-      scriptJobs.forEach((match) => {
-        const vacancyPath = match.replace(/"/g, '');
-        if (!jobs.find(j => j.url === CAREERS_BASE + vacancyPath)) {
-          const jobId = vacancyPath.match(/\/vacature\/(\d+)/)?.[1] || '';
-          jobs.push({
-            url: CAREERS_BASE + vacancyPath,
-            title: `Job ${jobId}`,
-            location: ['Bucharest'],
-            workmode: 'hybrid',
-            uid: jobId
-          });
-        }
-      });
-    }
+    const allText = $.html();
+    const vacatureMatches = allText.match(/"(\/vacature\/[^"]+)"/g) || [];
+    const seenPaths = new Set();
+    
+    vacatureMatches.forEach((match) => {
+      const path = match.replace(/"/g, '');
+      if (!seenPaths.has(path)) {
+        seenPaths.add(path);
+        const fullUrl = CAREERS_BASE + path;
+        const jobId = path.match(/\/vacature\/(\d+)/)?.[1] || '';
+        const title = path.split('/').pop()?.replace(/-/g, ' ').replace(/^\d+-/, '') || `Job ${jobId}`;
+        
+        jobs.push({
+          url: fullUrl,
+          title: title.charAt(0).toUpperCase() + title.slice(1),
+          location: ['Bucharest'],
+          workmode: 'hybrid',
+          uid: jobId
+        });
+      }
+    });
   }
   
   console.log(`Found ${jobs.length} job links from HTML`);
