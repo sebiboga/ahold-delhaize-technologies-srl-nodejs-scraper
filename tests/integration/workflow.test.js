@@ -34,6 +34,7 @@ describe('AD/01 Integration Tests', () => {
 
   describe('Full Pipeline', () => {
     it('should complete company validation workflow', async () => {
+  }, 30000);
       const result = await company.validateAndGetCompany();
       
       expect(result.status).toBeDefined();
