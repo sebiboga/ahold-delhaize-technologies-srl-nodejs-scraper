@@ -17,6 +17,7 @@ const TIMEOUT = 10000;
 
 const CAREERS_BASE = "https://www.ad01.com";
 const CAREERS_PAGE = "https://www.ad01.com/vacancies";
+const SITEMAP_URL = "https://www.ad01.com/sitemap.vacancy.xml";
 
 let COMPANY_NAME = null;
 
@@ -112,6 +113,54 @@ function parseJobsFromHtml(html) {
   return jobs;
 }
 
+function parseJobsFromSitemap(xml) {
+  const $ = load(xml);
+  const jobs = [];
+  
+  $('url loc').each((i, el) => {
+    const $el = $(el);
+    const url = $el.text().trim();
+    
+    if (url.includes('/vacature/')) {
+      const match = url.match(/\/vacature\/(\d+)\/([^/]+)/);
+      if (match && !jobs.find(j => j.uid === match[1])) {
+        const jobId = match[1];
+        const slug = match[2];
+        const title = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        
+        jobs.push({
+          url: url,
+          title: title,
+          location: ['Bucharest'],
+          workmode: 'hybrid',
+          uid: jobId
+        });
+      }
+    }
+  });
+  
+  console.log(`Found ${jobs.length} jobs from sitemap`);
+  return jobs;
+}
+
+async function fetchJobsFromSitemap() {
+  console.log("Fetching sitemap...");
+  const res = await fetch(SITEMAP_URL, {
+    headers: {
+      "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "Accept": "application/xml, text/xml"
+    }
+  });
+  
+  if (!res.ok) {
+    throw new Error(`Sitemap fetch error: ${res.status}`);
+  }
+  
+  const xml = await res.text();
+  const jobs = parseJobsFromSitemap(xml);
+  return jobs;
+}
+
 async function fetchJobDetails(jobUrl) {
   try {
     const res = await fetch(jobUrl, {
@@ -159,12 +208,10 @@ async function fetchJobDetails(jobUrl) {
 }
 
 async function scrapeAllListings(testOnlyOnePage = false) {
-  console.log("Fetching careers page...");
-  const html = await fetchCareersPage();
-  const jobs = parseJobsFromHtml(html);
+  const jobs = await fetchJobsFromSitemap();
   
   if (jobs.length === 0) {
-    console.log("No jobs found on careers page");
+    console.log("No jobs found in sitemap");
     return [];
   }
   
