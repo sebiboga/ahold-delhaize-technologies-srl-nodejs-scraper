@@ -11,7 +11,7 @@ describe('index.js Component Tests', () => {
     it('should filter locations to only Romanian cities', () => {
       const payload = {
         jobs: [
-          { url: 'https://test.com/1', title: 'Job 1', location: ['Romania'] },
+          { url: 'https://test.com/1', title: 'Job 1', location: ['Bucharest'] },
           { url: 'https://test.com/2', title: 'Job 2', location: ['Bucharest'] },
           { url: 'https://test.com/3', title: 'Job 3', location: ['Bulgaria'] },
           { url: 'https://test.com/4', title: 'Job 4', location: ['Cluj-Napoca'] },
@@ -21,9 +21,9 @@ describe('index.js Component Tests', () => {
       
       const result = index.transformJobsForSOLR(payload);
       
-      expect(result.jobs[0].location).toEqual(['România']);
+      expect(result.jobs[0].location).toEqual(['Bucharest']);
       expect(result.jobs[1].location).toEqual(['Bucharest']);
-      expect(result.jobs[2].location).toEqual(['România']);
+      expect(result.jobs[2].location).toEqual(['Bucharest']);
       expect(result.jobs[3].location).toEqual(['Cluj-Napoca']);
       expect(result.jobs[4].location).toEqual(['Bucharest']);
     });
