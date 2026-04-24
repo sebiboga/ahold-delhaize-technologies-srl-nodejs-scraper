@@ -1,16 +1,9 @@
-/**
- * AD/01 Job Scraper - Main Entry Point
- * 
- * PURPOSE: Scrapes job listings from AD/01 Careers (Ahold Delhaize Technologies SRL)
- * and stores them in Solr.
- */
-
 import fetch from "node-fetch";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { load } from "cheerio";
 import { validateAndGetCompany } from "./company.js";
-import { querySOLR, deleteJobByUrl, upsertJobs } from "./solr.js";
+import { querySOLR, upsertJobs } from "./solr.js";
 
 const COMPANY_CIF = "49544242";
 const TIMEOUT = 10000;
