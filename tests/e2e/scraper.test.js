@@ -1,50 +1,25 @@
 import { jest } from '@jest/globals';
 
-describe('AD/01 E2E Scraper Tests', () => {
-  let solr;
-  
-  beforeAll(async () => {
-    solr = await import('../../solr.js');
+describe('E2E: Full Scraping Workflow', () => {
+  const TEST_CIF = '49544242';
+  const TEST_BRAND = 'AD/01';
+
+  it('should complete full scrape workflow', async () => {
+    const company = await import('../../company.js');
+    const solr = await import('../../solr.js');
+    
+    const companyResult = await company.validateAndGetCompany();
+    expect(companyResult.status).toBe('active');
+    expect(companyResult.cif).toBe(TEST_CIF);
+    
+    const solrResult = await solr.querySOLR(TEST_CIF);
+    expect(solrResult.numFound).toBeGreaterThan(0);
   });
 
-  describe('Full Scraper Workflow', () => {
-    it.skip('should complete full scraping and upsert cycle', async () => {
-      const { scrapeAllListings, mapToJobModel, transformJobsForSOLR } = await import('../../index.js');
-      
-      const rawJobs = await scrapeAllListings(true);
-      
-      expect(rawJobs.length).toBeGreaterThan(0);
-      
-      const jobs = rawJobs.map(job => mapToJobModel(job, '49544242'));
-      const payload = {
-        source: 'ad01.com',
-        company: 'AHOLD DELHAIZE TECHNOLOGIES SRL',
-        cif: '49544242',
-        jobs
-      };
-      
-      const transformed = transformJobsForSOLR(payload);
-      
-      await solr.upsertJobs(transformed.jobs);
-      
-      const result = await solr.querySOLR('49544242');
-      expect(result.numFound).toBeGreaterThan(0);
-    });
-  });
-
-  describe('Job Data Validation', () => {
-    it('should have all required fields in scraped jobs', async () => {
-      const result = await solr.querySOLR('49544242');
-      
-      if (result.numFound > 0) {
-        const job = result.docs[0];
-        expect(job).toHaveProperty('url');
-        expect(job).toHaveProperty('title');
-        expect(job).toHaveProperty('company');
-        expect(job).toHaveProperty('cif');
-        expect(job).toHaveProperty('status');
-        expect(job).toHaveProperty('date');
-      }
-    });
+  it('should handle inactive company gracefully', async () => {
+    const demoanaf = await import('../../demoanaf.js');
+    
+    const searchResults = await demoanaf.searchCompany('INACTIVE_COMPANY_NOT_EXISTS');
+    expect(searchResults).toBeDefined();
   });
 });

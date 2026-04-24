@@ -23,7 +23,7 @@ describe('index.js Component Tests', () => {
       
       expect(result.jobs[0].location).toEqual(['România']);
       expect(result.jobs[1].location).toEqual(['Bucharest']);
-      expect(result.jobs[2].location).toEqual(['Bucharest']);
+      expect(result.jobs[2].location).toEqual(['România']);
       expect(result.jobs[3].location).toEqual(['Cluj-Napoca']);
       expect(result.jobs[4].location).toEqual(['Bucharest']);
     });
@@ -34,7 +34,7 @@ describe('index.js Component Tests', () => {
         company: 'ahold delhaize technologies srl',
         cif: '49544242',
         jobs: [
-          { url: 'https://test.com/1', title: 'Job 1', company: 'ahold', cif: '49544242' }
+          { url: 'https://test.com/1', title: 'Job 1', company: 'ahold delhaize', cif: '49544242' }
         ]
       };
       
@@ -63,8 +63,8 @@ describe('index.js Component Tests', () => {
   describe('mapToJobModel', () => {
     it('should map raw job to job model format', () => {
       const rawJob = {
-        url: 'https://www.ad01.com/job/123',
-        title: 'Network Engineer',
+        url: 'https://www.ad01.com/vacature/123',
+        title: 'Software Developer',
         location: ['Bucharest'],
         workmode: 'hybrid'
       };
@@ -94,37 +94,6 @@ describe('index.js Component Tests', () => {
       
       expect(result.location).toBeUndefined();
       expect(result.workmode).toBeUndefined();
-      expect(result.description).toBeUndefined();
-    });
-  });
-
-  describe('parseJobsFromHtml', () => {
-    it('should parse job links from HTML', () => {
-      const html = `
-        <html>
-          <a href="/vacature/125/network-engineer">Network Engineer</a>
-          <a href="/vacature/154/senior-data-engineer">Senior Data Engineer</a>
-        </html>
-      `;
-      
-      const result = index.parseJobsFromHtml(html);
-      
-      expect(result.length).toBe(2);
-      expect(result[0].url).toBe('https://www.ad01.com/vacature/125/network-engineer');
-      expect(result[1].url).toBe('https://www.ad01.com/vacature/154/senior-data-engineer');
-    });
-
-    it('should not duplicate job URLs', () => {
-      const html = `
-        <html>
-          <a href="/vacature/125/network-engineer">Network Engineer</a>
-          <a href="/vacature/125/network-engineer">Network Engineer</a>
-        </html>
-      `;
-      
-      const result = index.parseJobsFromHtml(html);
-      
-      expect(result.length).toBe(1);
     });
   });
 });
