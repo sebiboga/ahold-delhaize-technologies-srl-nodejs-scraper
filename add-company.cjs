@@ -5,7 +5,7 @@ const AUTH = Buffer.from("solr:SolrRocks").toString("base64");
 // Add company to company core
 const companyData = [{
   id: "49544242",
-  company: "AHOLD DELHAIZE TECHNOLOGIES SRL",
+  company: "AHOLD DELHAIZE TECHNOLOGIES S.R.L.",
   brand: "AD/01",
   status: "activ",
   location: ["Bucuresti"],
