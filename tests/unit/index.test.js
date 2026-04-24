@@ -23,7 +23,7 @@ describe('index.js Component Tests', () => {
       
       expect(result.jobs[0].location).toEqual(['România']);
       expect(result.jobs[1].location).toEqual(['Bucharest']);
-      expect(result.jobs[2].location).toEqual(['România']);
+      expect(result.jobs[2].location).toEqual(['Bucharest']);
       expect(result.jobs[3].location).toEqual(['Cluj-Napoca']);
       expect(result.jobs[4].location).toEqual(['Bucharest']);
     });

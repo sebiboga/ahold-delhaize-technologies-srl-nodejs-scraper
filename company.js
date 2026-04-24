@@ -134,35 +134,11 @@ function loadCachedCompanyData() {
 export async function getCompanyData() {
   const cachedData = loadCachedCompanyData();
   
+  const KNOWN_CIF = "49544242";
+  
   if (!cachedData?.summary?.cif) {
-    console.log(`Searching for company with brand: ${COMPANY_BRAND}`);
-    const searchResults = await searchCompany(COMPANY_BRAND);
-    
-    if (!searchResults || searchResults.length === 0) {
-      throw new Error(`No companies found for brand: ${COMPANY_BRAND}`);
-    }
-    
-    const exactMatch = searchResults.find(c => 
-      (c.name.toUpperCase().startsWith(COMPANY_BRAND.toUpperCase() + " ") || 
-       c.name.toUpperCase().includes(" " + COMPANY_BRAND.toUpperCase() + " ")) &&
-      c.statusLabel === "Funcțiune"
-    );
-    
-    if (!exactMatch) {
-      console.log("No exact match with 'Funcțiune' status, trying first active company...");
-      const activeMatch = searchResults.find(c => c.statusLabel === "Funcțiune");
-      if (!activeMatch) {
-        throw new Error(`No active company found for brand: ${COMPANY_BRAND}`);
-      }
-      var selectedCIF = activeMatch.cui;
-      console.log(`Selected: ${activeMatch.name} (CIF: ${selectedCIF})`);
-    } else {
-      var selectedCIF = exactMatch.cui;
-      console.log(`Found exact match: ${exactMatch.name} (CIF: ${selectedCIF})`);
-    }
-    
-    console.log(`Fetching company details for CIF: ${selectedCIF}`);
-    const anafData = await getCompanyFromANAFWithFallback(selectedCIF, cachedData?.anaf);
+    console.log(`Fetching company details for CIF: ${KNOWN_CIF}`);
+    const anafData = await getCompanyFromANAFWithFallback(KNOWN_CIF, cachedData?.anaf);
     
     if (!anafData) {
       throw new Error("No data from ANAF and no cache - cannot proceed with scraping");
