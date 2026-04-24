@@ -1,4 +1,4 @@
-name: WebScraper AD/01 to Peviitor
+name: Scrape AD/01 Jobs
 
 on:
   schedule:
