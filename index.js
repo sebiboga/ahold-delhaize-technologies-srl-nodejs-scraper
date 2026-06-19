@@ -236,4 +236,7 @@ async function main() {
 // Export functions for testing
 export { mapToJobModel, transformJobsForSOLR, fetchAndParseJob };
 
-main();
+// Only run main if this is the entry point, not when imported by tests
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
+}
