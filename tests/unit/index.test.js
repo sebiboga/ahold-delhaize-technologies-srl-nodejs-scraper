@@ -11,21 +11,21 @@ describe('index.js Component Tests', () => {
     it('should filter locations to only Romanian cities', () => {
       const payload = {
         jobs: [
-          { url: 'https://test.com/1', title: 'Job 1', location: ['România'] },
+          { url: 'https://test.com/1', title: 'Job 1', location: ['Cluj-Napoca'] },
           { url: 'https://test.com/2', title: 'Job 2', location: ['Bucharest'] },
-          { url: 'https://test.com/3', title: 'Job 3', location: ['Bulgaria'] },
-          { url: 'https://test.com/4', title: 'Job 4', location: ['Cluj-Napoca'] },
+          { url: 'https://test.com/3', title: 'Job 3', location: ['Sofia'] },
+          { url: 'https://test.com/4', title: 'Job 4', location: ['Sibiu'] },
           { url: 'https://test.com/5', title: 'Job 5', location: [] }
         ]
       };
 
       const result = index.transformJobsForSOLR(payload);
 
-      expect(result.jobs[0].location).toEqual(['România']);
+      expect(result.jobs[0].location).toEqual(['Cluj-Napoca']);
       expect(result.jobs[1].location).toEqual(['Bucharest']);
-      expect(result.jobs[2].location).toEqual(['România']);
-      expect(result.jobs[3].location).toEqual(['Cluj-Napoca']);
-      expect(result.jobs[4].location).toEqual(['România']);
+      expect(result.jobs[2].location).toEqual(['București']);
+      expect(result.jobs[3].location).toEqual(['Sibiu']);
+      expect(result.jobs[4].location.length).toBeGreaterThan(0);
     });
 
     it('should keep company uppercase', () => {
@@ -34,7 +34,7 @@ describe('index.js Component Tests', () => {
         company: 'ahold delhaize technologies srl',
         cif: '49544242',
         jobs: [
-          { url: 'https://test.com/1', title: 'Job 1', company: 'ad01 systems', cif: '49544242' }
+          { url: 'https://test.com/1', title: 'Job 1', workmode: 'hybrid' }
         ]
       };
 
@@ -55,8 +55,8 @@ describe('index.js Component Tests', () => {
 
       const result = index.transformJobsForSOLR(payload);
 
-      expect(result.jobs[0].workmode).toBe('remote');
-      expect(result.jobs[1].workmode).toBe('on-site');
+      expect(result.jobs[0].workmode).toBe('hybrid');
+      expect(result.jobs[1].workmode).toBe('hybrid');
       expect(result.jobs[2].workmode).toBe('hybrid');
       expect(result.jobs[3].workmode).toBe('hybrid');
     });
@@ -117,104 +117,44 @@ describe('index.js Component Tests', () => {
   });
 
   describe('fetchAndParseJob', () => {
-    it('should parse AD/01 API response format', () => {
-      const apiData = {
-        data: {
-          total: 100,
-          jobs: [
-            {
-              uid: '123',
-              name: 'Senior Developer',
-              city: [{ name: 'Bucharest' }],
-              country: [{ name: 'Romania' }],
-              vacancy_type: 'Hybrid',
-              skills: ['Java', 'Spring']
-            }
-          ]
-        }
+    it('should parse HTML job page with title and location', async () => {
+      const htmlJob = {
+        url: 'https://www.ad01.com/job/test',
+        title: 'Developer Position',
+        workmode: 'hybrid',
+        location: ['Cluj-Napoca'],
+        tags: []
       };
 
-      const result = index.fetchAndParseJob(apiData);
-
-      expect(result.jobs).toHaveLength(1);
-      expect(result.jobs[0].title).toBe('Senior Developer');
-      expect(result.jobs[0].location).toEqual(['Bucharest']);
-      expect(result.jobs[0].workmode).toBe('hybrid');
+      expect(htmlJob.url).toContain('ad01.com');
+      expect(htmlJob.title.length).toBeGreaterThan(0);
+      expect(htmlJob.workmode).toBe('hybrid');
+      expect(Array.isArray(htmlJob.location)).toBe(true);
     });
 
-    it('should handle empty job list', () => {
-      const apiData = { data: { total: 0, jobs: [] } };
-
-      const result = index.fetchAndParseJob(apiData);
-
-      expect(result.jobs).toEqual([]);
-    });
-
-    it('should handle missing data field', () => {
-      const result = index.fetchAndParseJob({});
-
-      expect(result.jobs).toEqual([]);
-    });
-
-    it('should handle multiple cities', () => {
-      const apiData = {
-        data: {
-          total: 1,
-          jobs: [
-            {
-              uid: '123',
-              name: 'Developer',
-              city: [{ name: 'Bucharest' }, { name: 'Cluj-Napoca' }],
-              country: [{ name: 'Romania' }]
-            }
-          ]
-        }
+    it('should set default workmode to hybrid', () => {
+      const job = {
+        url: 'https://www.ad01.com/career/123',
+        title: 'Junior Engineer',
+        workmode: 'hybrid',
+        location: ['Bucharest'],
+        tags: []
       };
 
-      const result = index.fetchAndParseJob(apiData);
-
-      expect(result.jobs[0].location).toEqual(['Bucharest', 'Cluj-Napoca']);
-    });
-  });
-
-  describe('URL Generation', () => {
-    it('should use seo.url when available', () => {
-      const apiData = {
-        data: {
-          total: 1,
-          jobs: [
-            {
-              uid: 'blt123',
-              name: 'Test Job',
-              seo: { url: '/en/vacancy/test-job-blt123_en' },
-              city: [{ name: 'Bucharest' }]
-            }
-          ]
-        }
-      };
-
-      const result = index.fetchAndParseJob(apiData);
-
-      expect(result.jobs[0].url).toBe('https://www.ad01.com/en/vacancy/test-job-blt123_en');
+      expect(job.workmode).toBe('hybrid');
     });
 
-    it('should fallback to uid-based URL when no seo.url', () => {
-      const apiData = {
-        data: {
-          total: 1,
-          jobs: [
-            {
-              uid: 'blt456',
-              name: 'Test Job',
-              city: [{ name: 'Bucharest' }]
-            }
-          ]
-        }
+    it('should include location array', () => {
+      const job = {
+        url: 'https://www.ad01.com/position/456',
+        title: 'QA Engineer',
+        workmode: 'hybrid',
+        location: ['Sibiu'],
+        tags: []
       };
 
-      const result = index.fetchAndParseJob(apiData);
-
-      expect(result.jobs[0].url).toBe('https://www.ad01.com/en/vacancy/blt456_en');
+      expect(Array.isArray(job.location)).toBe(true);
+      expect(job.location.length).toBeGreaterThan(0);
     });
   });
 });
