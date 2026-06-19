@@ -198,7 +198,6 @@ async function main() {
     console.log("\n=== TRANSFORM FOR SOLR ===");
     const mappedJobs = jobs.map(job => mapToJobModel(job, COMPANY_CIF));
     const solrPayload = transformJobsForSOLR({
-      source: 'ad01.com',
       company: COMPANY_NAME,
       cif: COMPANY_CIF,
       jobs: mappedJobs
