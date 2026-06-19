@@ -10,6 +10,7 @@ describe('index.js Component Tests', () => {
   describe('transformJobsForSOLR', () => {
     it('should filter locations to only Romanian cities', () => {
       const payload = {
+        company: 'ahold delhaize technologies srl',
         jobs: [
           { url: 'https://test.com/1', title: 'Job 1', location: ['Cluj-Napoca'] },
           { url: 'https://test.com/2', title: 'Job 2', location: ['Bucharest'] },
@@ -45,6 +46,7 @@ describe('index.js Component Tests', () => {
 
     it('should normalize workmode values', () => {
       const payload = {
+        company: 'ahold delhaize technologies srl',
         jobs: [
           { url: 'https://test.com/1', title: 'Job 1', workmode: 'Remote' },
           { url: 'https://test.com/2', title: 'Job 2', workmode: 'ON-SITE' },
@@ -62,7 +64,7 @@ describe('index.js Component Tests', () => {
     });
 
     it('should handle empty jobs array', () => {
-      const result = index.transformJobsForSOLR({ jobs: [] });
+      const result = index.transformJobsForSOLR({ company: 'test', jobs: [] });
       expect(result.jobs).toEqual([]);
     });
   });

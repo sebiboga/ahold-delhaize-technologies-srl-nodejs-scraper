@@ -161,9 +161,9 @@ function transformJobsForSOLR(payload) {
           loc.toLowerCase().includes(city.toLowerCase())
         )
       );
-      if (!job.location.length) {
-        job.location = [companyConfig.defaultLocation];
-      }
+    }
+    if (!job.location?.length) {
+      job.location = [companyConfig.defaultLocation];
     }
     job.workmode = ['remote', 'hybrid', 'on-site'].includes(job.workmode)
       ? job.workmode
