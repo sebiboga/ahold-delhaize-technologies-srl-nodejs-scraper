@@ -207,7 +207,7 @@ async function main() {
     // Step 4: Upsert to SOLR
     console.log("\n=== UPSERT TO SOLR ===");
     if (process.env.SOLR_AUTH) {
-      await upsertJobs(solrPayload);
+      await upsertJobs(solrPayload.jobs);
       await upsertCompany(companyData);
       console.log("✓ Upserted to SOLR");
     } else {
