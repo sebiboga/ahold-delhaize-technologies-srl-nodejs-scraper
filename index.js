@@ -228,6 +228,7 @@ async function main() {
     console.log("\n✅ Scraping complete!");
   } catch (error) {
     console.error(`\n❌ Fatal error: ${error.message}`);
+    if (error.stack) console.error(error.stack);
     process.exit(1);
   }
 }
@@ -235,7 +236,7 @@ async function main() {
 // Export functions for testing
 export { mapToJobModel, transformJobsForSOLR, fetchAndParseJob };
 
-// Only run main if this is the entry point, not when imported by tests
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Run main only if this is the entry point (not during tests)
+if (process.env.NODE_ENV !== 'test' && !process.env.JEST_WORKER_ID) {
   main();
 }
