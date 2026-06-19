@@ -21,7 +21,7 @@ beforeAll(() => {
   }
 });
 
-const EPAM_CIF = '33159615';
+const EPAM_CIF = '49544242';
 
 describe('Integration: API Workflow', () => {
 
@@ -32,17 +32,17 @@ describe('Integration: API Workflow', () => {
       anaf = await import('../../src/anaf.js');
     });
 
-    it('should search for EPAM brand and find the company', async () => {
-      const results = await anaf.searchCompany('EPAM');
+    it('should search for AD/01 brand and find the company', async () => {
+      const results = await anaf.searchCompany('AD/01');
 
       expect(Array.isArray(results)).toBe(true);
       expect(results.length).toBeGreaterThan(0);
 
-      const epam = results.find(c =>
-        c.name.toUpperCase().includes('EPAM SYSTEMS') && c.statusLabel === 'Funcțiune'
+      const ad01 = results.find(c =>
+        c.name.toUpperCase().includes('AD/01 SYSTEMS') && c.statusLabel === 'Funcțiune'
       );
-      expect(epam).toBeDefined();
-      expect(epam.cui.toString()).toBe(EPAM_CIF);
+      expect(ad01).toBeDefined();
+      expect(ad01.cui.toString()).toBe(EPAM_CIF);
     }, 15000);
 
     it('should return empty array for non-existent brand', async () => {
@@ -56,8 +56,8 @@ describe('Integration: API Workflow', () => {
       const data = await anaf.getCompanyFromANAF(EPAM_CIF);
 
       expect(data).toBeDefined();
-      expect(data.cui).toBe(33159615);
-      expect(data.name).toBe('EPAM SYSTEMS INTERNATIONAL SRL');
+      expect(data.cui).toBe(49544242);
+      expect(data.name).toBe('AHOLD DELHAIZE TECHNOLOGIES SRL');
       expect(data).toHaveProperty('address');
       expect(data).toHaveProperty('registrationNumber');
       expect(data).toHaveProperty('caenCode');
@@ -70,12 +70,12 @@ describe('Integration: API Workflow', () => {
     }, 60000);
 
     it('should use cached data when API fails (getCompanyFromANAFWithFallback)', async () => {
-      const cached = { cui: 33159615, name: 'EPAM SYSTEMS INTERNATIONAL SRL' };
+      const cached = { cui: 49544242, name: 'AHOLD DELHAIZE TECHNOLOGIES SRL' };
 
       const data = await anaf.getCompanyFromANAFWithFallback(EPAM_CIF, cached);
 
       expect(data).toBeDefined();
-      expect(data.cui).toBe(33159615);
+      expect(data.cui).toBe(49544242);
     }, 15000);
   });
 
@@ -103,42 +103,42 @@ describe('Integration: API Workflow', () => {
       const result = await solr.queryCompanySOLR(`id:${EPAM_CIF}`);
 
       expect(result.numFound).toBe(1);
-      const epam = result.docs[0];
-      expect(epam.id).toBe(EPAM_CIF);
-      expect(epam.company).toBe('EPAM SYSTEMS INTERNATIONAL SRL');
-      expect(epam.brand).toBe('EPAM');
-      expect(epam.status).toBe('activ');
-      expect(Array.isArray(epam.location)).toBe(true);
-      expect(epam.lastScraped).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      const ad01 = result.docs[0];
+      expect(ad01.id).toBe(EPAM_CIF);
+      expect(ad01.company).toBe('AHOLD DELHAIZE TECHNOLOGIES SRL');
+      expect(ad01.brand).toBe('AD/01');
+      expect(ad01.status).toBe('activ');
+      expect(Array.isArray(ad01.location)).toBe(true);
+      expect(ad01.lastScraped).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     }, 15000);
 
     itIfSolr('should have required company model fields', async () => {
       const result = await solr.queryCompanySOLR(`id:${EPAM_CIF}`);
-      const epam = result.docs[0];
+      const ad01 = result.docs[0];
 
-      expect(epam).toHaveProperty('id', EPAM_CIF);
-      expect(epam).toHaveProperty('company');
-      expect(epam).toHaveProperty('brand', 'EPAM');
-      expect(epam).toHaveProperty('status');
-      expect(['activ', 'suspendat', 'inactiv', 'radiat']).toContain(epam.status);
-      expect(epam).toHaveProperty('location');
-      expect(Array.isArray(epam.location)).toBe(true);
-      expect(epam).toHaveProperty('website');
-      expect(Array.isArray(epam.website)).toBe(true);
-      expect(epam.website[0]).toMatch(/^https?:\/\/.+/);
-      expect(epam).toHaveProperty('career');
-      expect(Array.isArray(epam.career)).toBe(true);
-      expect(epam.career[0]).toMatch(/^https?:\/\/.+/);
-      expect(epam).toHaveProperty('lastScraped');
-      expect(epam).toHaveProperty('scraperFile');
+      expect(ad01).toHaveProperty('id', EPAM_CIF);
+      expect(ad01).toHaveProperty('company');
+      expect(ad01).toHaveProperty('brand', 'AD/01');
+      expect(ad01).toHaveProperty('status');
+      expect(['activ', 'suspendat', 'inactiv', 'radiat']).toContain(ad01.status);
+      expect(ad01).toHaveProperty('location');
+      expect(Array.isArray(ad01.location)).toBe(true);
+      expect(ad01).toHaveProperty('website');
+      expect(Array.isArray(ad01.website)).toBe(true);
+      expect(ad01.website[0]).toMatch(/^https?:\/\/.+/);
+      expect(ad01).toHaveProperty('career');
+      expect(Array.isArray(ad01.career)).toBe(true);
+      expect(ad01.career[0]).toMatch(/^https?:\/\/.+/);
+      expect(ad01).toHaveProperty('lastScraped');
+      expect(ad01).toHaveProperty('scraperFile');
     }, 15000);
 
     itIfSolr('should have optional field (group) if present', async () => {
       const result = await solr.queryCompanySOLR(`id:${EPAM_CIF}`);
-      const epam = result.docs[0];
+      const ad01 = result.docs[0];
 
-      if (epam.group !== undefined) {
-        expect(typeof epam.group).toBe('string');
+      if (ad01.group !== undefined) {
+        expect(typeof ad01.group).toBe('string');
       }
     }, 15000);
   });
@@ -154,7 +154,7 @@ describe('Integration: API Workflow', () => {
       const result = await solr.querySOLR(EPAM_CIF);
 
       if (result.numFound === 0) {
-        console.log('⚠️ No EPAM jobs in Solr — skipping job field assertions (scraper may not have run yet)');
+        console.log('⚠️ No AD/01 jobs in Solr — skipping job field assertions (scraper may not have run yet)');
         return;
       }
 
@@ -164,7 +164,7 @@ describe('Integration: API Workflow', () => {
       const job = result.docs[0];
       expect(job).toHaveProperty('url');
       expect(job).toHaveProperty('title');
-      expect(job).toHaveProperty('company', 'EPAM SYSTEMS INTERNATIONAL SRL');
+      expect(job).toHaveProperty('company', 'AHOLD DELHAIZE TECHNOLOGIES SRL');
       expect(job).toHaveProperty('cif', EPAM_CIF);
       expect(job).toHaveProperty('status');
       expect(job).toHaveProperty('location');
@@ -206,16 +206,16 @@ describe('Integration: API Workflow', () => {
     });
 
     it('should complete the ANAF → Peviitor validation path', async () => {
-      const searchResults = await anaf.searchCompany('EPAM');
+      const searchResults = await anaf.searchCompany('AD/01');
       expect(searchResults.length).toBeGreaterThan(0);
 
       const epamCompany = searchResults.find(c =>
-        c.name.toUpperCase().includes('EPAM') && c.statusLabel === 'Funcțiune'
+        c.name.toUpperCase().includes('AD/01') && c.statusLabel === 'Funcțiune'
       );
       expect(epamCompany).toBeDefined();
 
       const anafData = await anaf.getCompanyFromANAF(epamCompany.cui.toString());
-      expect(anafData.name).toBe('EPAM SYSTEMS INTERNATIONAL SRL');
+      expect(anafData.name).toBe('AHOLD DELHAIZE TECHNOLOGIES SRL');
       expect(anafData.inactive).toBe(false);
     }, 30000);
 
@@ -226,18 +226,18 @@ describe('Integration: API Workflow', () => {
       const solrResult = await solrObj.queryCompanySOLR(`id:${EPAM_CIF}`);
       expect(solrResult.numFound).toBe(1);
       expect(solrResult.docs[0].id).toBe(EPAM_CIF);
-      expect(solrResult.docs[0].company).toBe('EPAM SYSTEMS INTERNATIONAL SRL');
+      expect(solrResult.docs[0].company).toBe('AHOLD DELHAIZE TECHNOLOGIES SRL');
     }, 30000);
 
     itIfSolr('should validate company and query SOLR for existing jobs', async () => {
       const companyResult = await companyModule.validateAndGetCompany();
 
       expect(companyResult.status).toBe('active');
-      expect(companyResult.company).toBe('EPAM SYSTEMS INTERNATIONAL SRL');
+      expect(companyResult.company).toBe('AHOLD DELHAIZE TECHNOLOGIES SRL');
       expect(companyResult.cif).toBe(EPAM_CIF);
 
       if (companyResult.existingJobsCount === 0) {
-        console.log('⚠️ No EPAM jobs in Solr — skipping job count assertion (scraper may not have run yet)');
+        console.log('⚠️ No AD/01 jobs in Solr — skipping job count assertion (scraper may not have run yet)');
         return;
       }
       expect(companyResult.existingJobsCount).toBeGreaterThan(0);
