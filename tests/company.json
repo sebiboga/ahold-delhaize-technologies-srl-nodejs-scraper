@@ -4,7 +4,7 @@
   "brand": "AD/01",
   "anaf": {
     "cui": 49544242,
-    "name": "AHOLD DELHAIZE TECHNOLOGIES SRL",
+    "name": "AHOLD DELHAIZE TECHNOLOGIES S.R.L.",
     "address": "MUNICIPIUL BUCUREŞTI, SECTOR 1, BLD IANCU DE HUNEDOARA, NR.48, ET.9",
     "registrationNumber": "J2014005735405",
     "phone": "",
@@ -69,7 +69,7 @@
   },
   "peviitor": {
     "id": "49544242",
-    "company": "AHOLD DELHAIZE TECHNOLOGIES SRL",
+    "company": "AHOLD DELHAIZE TECHNOLOGIES S.R.L.",
     "brand": "AD/01",
     "group": "AD/01 Systems",
     "status": "activ",
@@ -85,7 +85,7 @@
     "_root_": "49544242"
   },
   "summary": {
-    "company": "AHOLD DELHAIZE TECHNOLOGIES SRL",
+    "company": "AHOLD DELHAIZE TECHNOLOGIES S.R.L.",
     "cif": "49544242",
     "active": true,
     "inactiveSince": "2018-12-27",
