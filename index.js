@@ -181,7 +181,8 @@ async function main() {
   try {
     // Step 1: Validate company
     console.log("\n=== VALIDATE COMPANY ===");
-    const { company, address } = await validateAndGetCompany();
+    const companyData = await validateAndGetCompany();
+    const { company, address } = companyData;
     COMPANY_NAME = company;
     console.log(`✓ Company validated: ${COMPANY_NAME}`);
 
