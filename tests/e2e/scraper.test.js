@@ -130,14 +130,14 @@ describe('E2E: Full Scraping Pipeline', () => {
 
       const payload = {
         source: 'ad01.com',
-        company: 'AHOLD DELHAIZE TECHNOLOGIES SRL',
+        company: 'AHOLD DELHAIZE TECHNOLOGIES S.R.L.',
         cif: TEST_CIF,
         jobs
       };
 
       const transformed = index.transformJobsForSOLR(payload);
 
-      expect(transformed.company).toBe('AHOLD DELHAIZE TECHNOLOGIES SRL');
+      expect(transformed.company).toBe('AHOLD DELHAIZE TECHNOLOGIES S.R.L.');
       expect(transformed.jobs.length).toBe(jobs.length);
 
       for (const job of transformed.jobs) {
@@ -189,7 +189,7 @@ describe('E2E: Full Scraping Pipeline', () => {
       const result = await company.validateAndGetCompany();
 
       expect(result.status).toBe('active');
-      expect(result.company).toBe('AHOLD DELHAIZE TECHNOLOGIES SRL');
+      expect(result.company).toBe('AHOLD DELHAIZE TECHNOLOGIES S.R.L.');
       expect(result.cif).toBe(TEST_CIF);
 
       if (result.existingJobsCount === 0) {
@@ -242,7 +242,7 @@ describe('E2E: Full Scraping Pipeline', () => {
       }
 
       for (const job of result.docs) {
-        expect(job.company).toBe('AHOLD DELHAIZE TECHNOLOGIES SRL');
+        expect(job.company).toBe('AHOLD DELHAIZE TECHNOLOGIES S.R.L.');
         expect(job.cif).toBe(TEST_CIF);
       }
     }, 15000);
@@ -252,7 +252,7 @@ describe('E2E: Full Scraping Pipeline', () => {
 
       expect(result.numFound).toBe(1);
       const ad01 = result.docs[0];
-      expect(ad01.company).toBe('AHOLD DELHAIZE TECHNOLOGIES SRL');
+      expect(ad01.company).toBe('AHOLD DELHAIZE TECHNOLOGIES S.R.L.');
       expect(ad01.status).toBe('activ');
     }, 15000);
   });
