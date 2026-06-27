@@ -1,10 +1,10 @@
 {
   "cif": "49544242",
-  "legalName": "AHOLD DELHAIZE TECHNOLOGIES SRL",
+  "legalName": "AHOLD DELHAIZE TECHNOLOGIES S.R.L.",
   "brand": "AD/01",
   "website": "https://www.ad01.com",
   "careerUrl": "https://www.ad01.com/vacancies",
   "apiBase": "https://www.ad01.com",
-  "defaultLocation": "București",
+  "defaultLocation": "Bucure\u0219ti",
   "scraperFile": "https://raw.githubusercontent.com/sebiboga/ahold-delhaize-technologies-srl-nodejs-scraper/main/.github/workflows/job-seeker-ro-spider.yml"
 }
