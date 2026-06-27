@@ -39,25 +39,21 @@ describe('E2E: Full Scraping Pipeline', () => {
     let apiData;
 
     beforeAll(async () => {
-      let res;
       try {
-        res = await fetch(EPAM_API_URL, {
-          headers: {
-            'User-Agent': 'job_seeker_ro_spider',
-            'Accept': 'application/json'
-          }
+        const res = await fetch(EPAM_API_URL, {
+          headers: { 'User-Agent': 'job_seeker_ro_spider', 'Accept': 'application/json' }
         });
-        if (!res.ok) throw new Error('API returned ' + res.status);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         const ct = res.headers.get('content-type') || '';
-        if (!ct.includes('json')) throw new Error('API returned ' + ct);
+        if (!ct.includes('json')) throw new Error('Content-Type: ' + ct);
         apiData = await res.json();
       } catch (e) {
-        console.log('⚠️ AD/01 API unavailable: ' + e.message + ' — skipping AD/01 API tests');
-        apiData = null;
+        console.log('⚠️ AD/01 API unavailable: ' + e.message + ' — marking tests as skipped');
+        apiAvailable = false;
       }
     }, 15000);
 
-    (skipIfNoApi(apiData))('should respond with valid job data from AD/01 API', () => {
+    it('should respond with valid job data from AD/01 API', () => {
       expect(apiData).toHaveProperty('data');
       expect(apiData.data).toHaveProperty('jobs');
       expect(Array.isArray(apiData.data.jobs)).toBe(true);
@@ -66,7 +62,7 @@ describe('E2E: Full Scraping Pipeline', () => {
       expect(typeof apiData.data.total).toBe('number');
     }, 10000);
 
-    (skipIfNoApi(apiData))('should have Romania jobs with expected fields', () => {
+    it('should have Romania jobs with expected fields', () => {
       const job = apiData.data.jobs[0];
       expect(job).toHaveProperty('uid');
       expect(job).toHaveProperty('name');
@@ -74,7 +70,7 @@ describe('E2E: Full Scraping Pipeline', () => {
       expect(job).toHaveProperty('city');
     });
 
-    (skipIfNoApi(apiData))('should have Romanian country on all jobs', () => {
+    it('should have Romanian country on all jobs', () => {
       const allCountries = apiData.data.jobs.flatMap(j =>
         (j.country || []).map(c => c.name?.toLowerCase())
       );
@@ -82,7 +78,7 @@ describe('E2E: Full Scraping Pipeline', () => {
       expect(allCountries.every(c => c === 'romania')).toBe(true);
     });
 
-    (skipIfNoApi(apiData))('should have country set to Romania', () => {
+    it('should have country set to Romania', () => {
       const job = apiData.data.jobs[0];
       expect(job).toHaveProperty('country');
       const romaniaCountry = (job.country || []).some(c =>
@@ -98,25 +94,22 @@ describe('E2E: Full Scraping Pipeline', () => {
 
     beforeAll(async () => {
       index = await import('../../index.js');
-      let res;
       try {
-        res = await fetch(EPAM_API_URL, {
-          headers: {
-            'User-Agent': 'job_seeker_ro_spider',
-            'Accept': 'application/json'
-          }
+        const res = await fetch(EPAM_API_URL, {
+          headers: { 'User-Agent': 'job_seeker_ro_spider', 'Accept': 'application/json' }
         });
-        if (!res.ok) throw new Error('API returned ' + res.status);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         const ct = res.headers.get('content-type') || '';
-        if (!ct.includes('json')) throw new Error('API returned ' + ct);
+        if (!ct.includes('json')) throw new Error('Content-Type: ' + ct);
         apiData = await res.json();
       } catch (e) {
-        console.log('⚠️ AD/01 API unavailable: ' + e.message + ' — skipping Parse + Transform tests');
-        apiData = null;
+        console.log('⚠️ AD/01 API unavailable: ' + e.message + ' — marking tests as skipped');
+        apiAvailable = false;
       }
     }, 15000);
 
-    (skipIfNoApi(apiData))('should parse real AD/01 API response into standardized format', () => {
+    it('should parse real AD/01 API response into standardized format', () => {
+      if (!apiAvailable) return;
       const result = index.parseApiJobs(apiData);
 
       expect(result).toHaveProperty('jobs');
@@ -135,7 +128,7 @@ describe('E2E: Full Scraping Pipeline', () => {
       expect(parsed).toHaveProperty('tags');
     });
 
-    (skipIfNoApi(apiData))('should map parsed jobs to job model', () => {
+    it('should map parsed jobs to job model', () => {
       const parsed = index.parseApiJobs(apiData);
       const model = index.mapToJobModel(parsed.jobs[0], TEST_CIF);
 
@@ -148,7 +141,7 @@ describe('E2E: Full Scraping Pipeline', () => {
       expect(model.url).toMatch(/^https:\/\/careers\.ad01\.com\//);
     });
 
-    (skipIfNoApi(apiData))('should transform jobs and filter to Romanian locations', () => {
+    it('should transform jobs and filter to Romanian locations', () => {
       const parsed = index.parseApiJobs(apiData);
       const jobs = parsed.jobs.map(j => index.mapToJobModel(j, TEST_CIF));
 
@@ -172,7 +165,7 @@ describe('E2E: Full Scraping Pipeline', () => {
       }
     });
 
-    (skipIfNoApi(apiData))('should produce valid job URLs that are accessible', async () => {
+    it('should produce valid job URLs that are accessible', async () => {
       const parsed = index.parseApiJobs(apiData);
 
       for (const job of parsed.jobs.slice(0, 2)) {
@@ -194,7 +187,8 @@ describe('E2E: Full Scraping Pipeline', () => {
       company = await import('../../company.js');
     });
 
-    (skipIfNoApi(apiData))('should find AD/01 in ANAF and validate active status', async () => {
+    it('should find AD/01 in ANAF and validate active status', async () => {
+      if (!apiAvailable) return;
       const results = await anaf.searchCompany(TEST_BRAND);
 
       const ad01 = results.find(c =>
