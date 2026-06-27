@@ -181,8 +181,8 @@ async function main() {
   try {
     // Step 1: Validate company
     console.log("\n=== VALIDATE COMPANY ===");
-    const companyData = await validateAndGetCompany();
-    COMPANY_NAME = companyData.company;
+    const { company, address } = await validateAndGetCompany();
+    COMPANY_NAME = company;
     console.log(`✓ Company validated: ${COMPANY_NAME}`);
 
     // Step 2: Scrape jobs
@@ -208,7 +208,17 @@ async function main() {
     console.log("\n=== UPSERT TO SOLR ===");
     if (process.env.SOLR_AUTH) {
       await upsertJobs(solrPayload.jobs);
-      await upsertCompany(companyData);
+      await upsertCompany({
+        id: COMPANY_CIF,
+        company,
+        brand: companyConfig.brand,
+        status: "activ",
+        location: address ? [address] : [companyConfig.defaultLocation],
+        website: [companyConfig.website],
+        career: [companyConfig.careerUrl],
+        lastScraped: new Date().toISOString().split('T')[0],
+        scraperFile: companyConfig.scraperFile
+      });
       console.log("✓ Upserted to SOLR");
     } else {
       console.log("⚠ SOLR_AUTH not set — skipping SOLR upsert (dry run)");
